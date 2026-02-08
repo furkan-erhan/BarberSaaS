@@ -17,7 +17,7 @@ public class BarberShopsController : ControllerBase
         _context = context;
     }
 
-    // Task 3: Implement GET endpoint
+    //  Implement GET endpoint
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
