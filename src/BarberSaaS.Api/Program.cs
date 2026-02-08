@@ -1,8 +1,23 @@
+// This allows the API project to access extension methods
+// defined inside the Infrastructure project (like AddInfrastructure)
+using BarberSaaS.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Enables controller-based APIs (required for using Controllers folder)
+builder.Services.AddControllers();
+
+
+// Registers Swagger / OpenAPI services
+// This prepares Swagger internally (it does NOT expose endpoints yet)
 builder.Services.AddOpenApi();
+
+
+// Registers all Infrastructure services (DbContext, repositories, etc.)
+// This connects the API layer with the Infrastructure layer
+// Without this, controllers that depend on Infrastructure will crash
+builder.Services.AddInfrastructure(builder.Configuration);
+
 
 var app = builder.Build();
 
@@ -10,32 +25,26 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    // Add this to provide the UI (The Swagger Website)
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "BarberSaaS API v1");
+        options.RoutePrefix = "swagger"; // This makes the URL: /swagger
+    });
+    
 }
 
+// Forces HTTPS usage
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// Maps controller routes (e.g. /api/barbershops)
+// Without this, controllers will never be reachable
+app.MapControllers();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+
+
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+
