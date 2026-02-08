@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 // This allows the API project to access extension methods
 // defined inside the Infrastructure project (like AddInfrastructure)
+=======
+>>>>>>> 0c6189115291c94968e4bba90e389854686b1058
 using BarberSaaS.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+<<<<<<< HEAD
 // Enables controller-based APIs (required for using Controllers folder)
 builder.Services.AddControllers();
 
 
 // Registers Swagger / OpenAPI services
 // This prepares Swagger internally (it does NOT expose endpoints yet)
+=======
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add services to the container.
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+>>>>>>> 0c6189115291c94968e4bba90e389854686b1058
 builder.Services.AddOpenApi();
 
 
@@ -44,6 +54,22 @@ app.MapControllers();
 
 
 
+<<<<<<< HEAD
+=======
+app.MapGet("/weatherforecast", () =>
+{
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetWeatherForecast");
+>>>>>>> 0c6189115291c94968e4bba90e389854686b1058
 
 app.Run();
 
