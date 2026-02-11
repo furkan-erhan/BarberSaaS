@@ -23,7 +23,7 @@ public class BarberShopsController : ControllerBase
     {
         // Fetching all shops from the database asynchronously
         var shops = await _context.BarberShops.ToListAsync();
-        
+
         // Returns 200 OK with the list (even if empty [])
         return Ok(shops);
     }
