@@ -19,7 +19,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost] // for adding new appointment 
-    public async Task<IActionResult> Create(Appointment appointment) // fonksiyon needn asenkron ? Database'i bos yere sirf kendi islemi icin bekletmesin diye mi ?
+    public async Task<IActionResult> Create(Appointment appointment)
     {
         appointment.Status = AppointmentStatus.Pending;
         appointment.CreatedAt = DateTime.UtcNow;
@@ -32,14 +32,14 @@ public class AppointmentsController : ControllerBase
         return Ok(appointment);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? barberShopId) // Buarada argument kisminda ne beklenildigini anlamadim
+    [HttpGet] // get all appointments of specific barbershop by id. Or all appointments when no parameter given
+    public async Task<IActionResult> GetAll([FromQuery] Guid? barberShopId)
     {
-        var query = _context.Appointments.Where(a => !a.IsDeleted); // get undeleted appointments
+        var query = _context.Appointments.Where(a => !a.IsDeleted); // get active appointments
 
         if (barberShopId.HasValue)
         {
-            query = query.Where(a => a.BarberShopId == barberShopId.Value); // Burada neden barberShopId yazmak yerine sonuna .Value'da ekledik ?
+            query = query.Where(a => a.BarberShopId == barberShopId.Value);
         }
 
         var appointments = await query.ToListAsync();
@@ -48,10 +48,10 @@ public class AppointmentsController : ControllerBase
 
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id) // buradaki guid kisminda neden Guid? yazmadik ? Get kisminda opsiyonel olarak bir berber idsini arayip onun tum appointmentlarini listeleriz ama istersek guid vermeyip BUTUN appointmentlarin hepsini de getirebiliriz mantigiyla hareket ederken, burada 'zorunlu' olarak spesifik bir appointment silecegimiz icin mi ?
+    [HttpDelete("{id}")] // delete specific appointment by appointment id
+    public async Task<IActionResult> Delete(Guid id)
     {
-        var appointment = await _context.Appointments.FindAsync(id); // Bu satirda su hatayi verdi "Argument 1: cannot convert from 'System.Guid' to 'System.Type'"
+        var appointment = await _context.Appointments.FindAsync(id);
 
         if (appointment == null) return NotFound();
 
