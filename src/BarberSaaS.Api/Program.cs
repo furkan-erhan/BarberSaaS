@@ -23,6 +23,8 @@ builder.Services.AddOpenApi();
 // Without this, controllers that depend on Infrastructure will crash
 builder.Services.AddInfrastructure(builder.Configuration);
 
+//(This tells the app to look for mapping configurations in your project).
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
