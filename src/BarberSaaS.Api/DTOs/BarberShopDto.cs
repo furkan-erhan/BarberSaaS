@@ -4,10 +4,7 @@ public class BarberShopDto
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
-    public string? Description { get; set; }
+    public string Slug { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
-    
-    // You can also include a count of appointments instead of the full list
-    public int TotalUpcomingAppointments { get; set; }
+    public string? Address { get; set; }
 }
