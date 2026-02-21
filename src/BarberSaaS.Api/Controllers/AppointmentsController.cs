@@ -67,4 +67,4 @@ public class AppointmentsController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-}   
+}
