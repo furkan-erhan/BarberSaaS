@@ -25,7 +25,7 @@ public class BarberShopsController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         // Fetch entities from DB
-        var shops = await _context.BarberShops.ToListAsync();
+        var shops = await _context.BarberShops.Where(x => !x.IsDeleted).ToListAsync();
 
         // 5. Transform entities into DTOs
         var shopDtos = _mapper.Map<IEnumerable<BarberShopDto>>(shops);
@@ -38,7 +38,7 @@ public class BarberShopsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id);
 
         if (shop == null) throw new KeyNotFoundException($"Barber shop with ${id} not found");
 
@@ -46,11 +46,13 @@ public class BarberShopsController : ControllerBase
     }
 
 
-    [HttpPost("{id}")]
+    [HttpPost]
     public async Task<IActionResult> Create(BarberShopDto barberShopDto)
     {
         var shop = _mapper.Map<BarberShop>(barberShopDto);
-
+        shop.Id = Guid.NewGuid();
+        shop.CreatedAt = DateTime.UtcNow;
+        shop.UpdatedAt = DateTime.UtcNow;
         _context.BarberShops.Add(shop);
         await _context.SaveChangesAsync();
 
@@ -64,17 +66,17 @@ public class BarberShopsController : ControllerBase
         if (existingShop == null) throw new KeyNotFoundException("Shop Not Found For Update");
 
         _mapper.Map(barberShopDto, existingShop); // Write new informations from barberShopDtop onto existingShop
+        existingShop.Id = id;
         existingShop.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();
-
         return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var shop = await _context.BarberShops.FindAsync(id);
+        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id);
         if (shop == null) throw new KeyNotFoundException("Barber Shop Not Found For Delete");
 
         shop.IsDeleted = true;
