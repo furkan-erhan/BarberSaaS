@@ -22,7 +22,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(AppointmentDto appointmentDto) // 3. Use DTO as input
+    public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) // 3. Use DTO as input
     {
         // 4. Map DTO back to Entity for saving to Database
         var appointment = _mapper.Map<Appointment>(appointmentDto);
@@ -40,7 +40,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, AppointmentDto appointmentDto)
+    public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
         var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
@@ -66,7 +66,7 @@ public class AppointmentsController : ControllerBase
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
 
-        var appointmentDto = _mapper.Map<IEnumerable<AppointmentDto>>(existingAppointment);
+        var appointmentDto = _mapper.Map<AppointmentDto>(existingAppointment);
         return Ok(appointmentDto);
     }
 

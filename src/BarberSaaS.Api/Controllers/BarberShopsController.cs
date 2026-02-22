@@ -38,18 +38,19 @@ public class BarberShopsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id);
+        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
-        if (shop == null) throw new KeyNotFoundException($"Barber shop with ${id} not found");
+        if (shop == null) throw new KeyNotFoundException($"Barber shop with {id} not found");
 
         return Ok(_mapper.Map<BarberShopDto>(shop));
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> Create(BarberShopDto barberShopDto)
+    public async Task<IActionResult> Create(CreateBarberShopDto barberShopDto)
     {
         var shop = _mapper.Map<BarberShop>(barberShopDto);
+
         shop.Id = Guid.NewGuid();
         shop.CreatedAt = DateTime.UtcNow;
         shop.UpdatedAt = DateTime.UtcNow;
@@ -60,9 +61,9 @@ public class BarberShopsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, BarberShopDto barberShopDto)
+    public async Task<IActionResult> Update(Guid id, UpdateBarberShopDto barberShopDto)
     {
-        var existingShop = await _context.BarberShops.FindAsync(id);
+        var existingShop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         if (existingShop == null) throw new KeyNotFoundException("Shop Not Found For Update");
 
         _mapper.Map(barberShopDto, existingShop); // Write new informations from barberShopDtop onto existingShop
@@ -76,7 +77,7 @@ public class BarberShopsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id);
+        var shop = await _context.BarberShops.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         if (shop == null) throw new KeyNotFoundException("Barber Shop Not Found For Delete");
 
         shop.IsDeleted = true;
