@@ -1,6 +1,7 @@
 // This allows the API project to access extension methods
 // defined inside the Infrastructure project (like AddInfrastructure)
 
+using BarberSaaS.Api.Middleware;
 using BarberSaaS.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 // Everything here controls HOW incoming HTTP requests are handled.

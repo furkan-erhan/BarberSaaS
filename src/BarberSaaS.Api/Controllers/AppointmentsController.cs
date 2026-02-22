@@ -22,7 +22,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(AppointmentDto appointmentDto) // 3. Use DTO as input
+    public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) // 3. Use DTO as input
     {
         // 4. Map DTO back to Entity for saving to Database
         var appointment = _mapper.Map<Appointment>(appointmentDto);
@@ -39,27 +39,44 @@ public class AppointmentsController : ControllerBase
         return Ok(_mapper.Map<AppointmentDto>(appointment));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] Guid? barberShopId)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
-        var query = _context.Appointments.Where(a => !a.IsDeleted);
+        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
-        if (barberShopId.HasValue)
-        {
-            query = query.Where(a => a.BarberShopId == barberShopId.Value);
-        }
+        if (existingAppointment == null) throw new KeyNotFoundException("Appointment has not found");
 
-        var appointments = await query.ToListAsync();
-
-        // 6. Transform the list to DTOs
-        return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
+        _mapper.Map(appointmentDto, existingAppointment);
+        await _context.SaveChangesAsync();
+        return NoContent();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var appointments = await _context.Appointments.Where(x => !x.IsDeleted).ToListAsync();
+        var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
+        return Ok(appointmentsDto);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+
+        if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
+
+        var appointmentDto = _mapper.Map<AppointmentDto>(existingAppointment);
+        return Ok(appointmentDto);
+    }
+
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var appointment = await _context.Appointments.FindAsync(id);
-        if (appointment == null) return NotFound();
+        var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        if (appointment == null) throw new KeyNotFoundException("Appointment not found");
 
         appointment.IsDeleted = true;
         appointment.UpdatedAt = DateTime.UtcNow;
@@ -67,4 +84,4 @@ public class AppointmentsController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-}   
+}

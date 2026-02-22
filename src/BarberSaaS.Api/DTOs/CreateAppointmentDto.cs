@@ -1,13 +1,11 @@
 namespace BarberSaaS.Api.DTOs;
 
-public class AppointmentDto
+public class CreateAppointmentDto
 {
-    public Guid Id { get; set; }
     public Guid BarberShopId { get; set; }
     public Guid CustomerId { get; set; }
     public Guid EmployeeId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public string Status { get; set; } = string.Empty;
     public decimal? Price { get; set; }
 }

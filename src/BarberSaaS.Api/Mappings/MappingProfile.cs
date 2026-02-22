@@ -1,13 +1,23 @@
 using AutoMapper;
-using BarberSaaS.Api.DTOs;            // Ensure this is here
-using BarberSaaS.Domain.Entities;     // Ensure this is here
+using BarberSaaS.Api.DTOs;
+using BarberSaaS.Domain.Entities;
 
 public class MappingProfile : Profile
 {
-    public MappingProfile()
+    public MappingProfile() // Removed reverse mapping because we have task specific DTOs and in database we hold only entities, not DTOs.
     {
-        // No parentheses after the DTO names!
-        CreateMap<BarberShop, BarberShopDto>().ReverseMap();
-        CreateMap<Appointment, AppointmentDto>().ReverseMap();
+        // Response Mappings (Entity -> DTO)
+        CreateMap<BarberShop, BarberShopDto>();
+        CreateMap<Appointment, AppointmentDto>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+        // Request Mappings (DTO -> Entity)
+        CreateMap<CreateBarberShopDto, BarberShop>();
+        CreateMap<UpdateBarberShopDto, BarberShop>();
+
+        CreateMap<CreateAppointmentDto, Appointment>();
+        CreateMap<UpdateAppointmentDto, Appointment>();
+
+
     }
 }
