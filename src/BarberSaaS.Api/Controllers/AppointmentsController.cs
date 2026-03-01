@@ -5,6 +5,7 @@ using BarberSaaS.Domain.Enums;
 using BarberSaaS.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization; 
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -20,7 +21,7 @@ public class AppointmentsController : ControllerBase
         _context = context;
         _mapper = mapper; // 2. Inject Mapper
     }
-
+    [Authorize] 
     [HttpPost]
     public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) // 3. Use DTO as input
     {
@@ -38,7 +39,8 @@ public class AppointmentsController : ControllerBase
         // 5. Return the DTO version to the user
         return Ok(_mapper.Map<AppointmentDto>(appointment));
     }
-
+    
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
@@ -71,7 +73,7 @@ public class AppointmentsController : ControllerBase
     }
 
 
-
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
