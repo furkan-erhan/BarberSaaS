@@ -15,10 +15,11 @@ public class CreateAppointmentRequestValidator : AbstractValidator<CreateAppoint
 
         RuleFor(x => x.StartTime)
             .NotEmpty()
-            .GreaterThan(DateTime.UtcNow).WithMessage("Appointment must be in the future");
+            .GreaterThan(DateTime.UtcNow).WithMessage("Appointment start time must be in the future");
 
         RuleFor(x => x.EndTime)
             .NotEmpty()
+            .GreaterThan(DateTime.UtcNow).WithMessage("Appointment end time must be in the future")
             .GreaterThan(x => x.StartTime).WithMessage("End time must be after start time");
 
         RuleFor(x => x.Price)
