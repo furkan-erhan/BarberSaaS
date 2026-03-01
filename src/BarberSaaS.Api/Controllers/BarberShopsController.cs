@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper; // 1. Add this
 using BarberSaaS.Api.DTOs;
 using BarberSaaS.Domain.Entities; // 2. Add this to find BarberShopDto
+using Microsoft.AspNetCore.Authorization;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -45,7 +46,7 @@ public class BarberShopsController : ControllerBase
         return Ok(_mapper.Map<BarberShopDto>(shop));
     }
 
-
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(CreateBarberShopDto barberShopDto)
     {
@@ -60,6 +61,7 @@ public class BarberShopsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = shop.Id }, _mapper.Map<BarberShopDto>(shop));
     }
 
+    [Authorize] 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateBarberShopDto barberShopDto)
     {
@@ -74,6 +76,8 @@ public class BarberShopsController : ControllerBase
         return NoContent();
     }
 
+
+    [Authorize] 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
