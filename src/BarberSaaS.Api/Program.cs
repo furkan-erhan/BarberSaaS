@@ -3,10 +3,19 @@ using BarberSaaS.Api.Security;
 using BarberSaaS.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+
+
+// Registers all Infrastructure services (DbContext, repositories, etc.)
+// This connects the API layer with the Infrastructure layer
+// Without this, controllers that depend on Infrastructure will crash
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -42,6 +51,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 
