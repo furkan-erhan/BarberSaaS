@@ -4,6 +4,9 @@ public class AppointmentDto
 {
     public Guid Id { get; set; }
     public Guid BarberShopId { get; set; }
+
+    public string BarberShopName { get; set; } = string.Empty;
+
     public Guid CustomerId { get; set; }
     public Guid EmployeeId { get; set; }
     public DateTime StartTime { get; set; }
