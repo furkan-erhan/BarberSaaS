@@ -3,6 +3,9 @@
 
 using BarberSaaS.Api.Middleware;
 using BarberSaaS.Infrastructure;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,22 +13,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 
-// Registers Swagger / OpenAPI services
-// This prepares Swagger internally (it does NOT expose endpoints yet)
-
-builder.Services.AddInfrastructure(builder.Configuration);
-
-
-builder.Services.AddOpenApi();
-
 
 // Registers all Infrastructure services (DbContext, repositories, etc.)
 // This connects the API layer with the Infrastructure layer
 // Without this, controllers that depend on Infrastructure will crash
 builder.Services.AddInfrastructure(builder.Configuration);
 
+
+builder.Services.AddOpenApi();
+
+
+
 //(This tells the app to look for mapping configurations in your project).
 builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 
