@@ -5,7 +5,7 @@ using BarberSaaS.Domain.Enums;
 using BarberSaaS.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization; 
+using Microsoft.AspNetCore.Authorization;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -21,7 +21,7 @@ public class AppointmentsController : ControllerBase
         _context = context;
         _mapper = mapper; // 2. Inject Mapper
     }
-    [Authorize] 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) // 3. Use DTO as input
     {
@@ -39,7 +39,7 @@ public class AppointmentsController : ControllerBase
         // 5. Return the DTO version to the user
         return Ok(_mapper.Map<AppointmentDto>(appointment));
     }
-    
+
     [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
@@ -56,7 +56,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var appointments = await _context.Appointments.Where(x => !x.IsDeleted).ToListAsync();
+        var appointments = await _context.Appointments.Include(a => a.BarberShop).Where(x => !x.IsDeleted).ToListAsync();
         var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         return Ok(appointmentsDto);
     }
@@ -64,7 +64,7 @@ public class AppointmentsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
 

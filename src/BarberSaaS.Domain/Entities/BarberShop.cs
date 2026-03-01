@@ -14,7 +14,8 @@ public class BarberShop : BaseEntity
 
     public Guid OwnerId { get; set; }  // shop owners id, not the shops id 
 
-    public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>(); // for Entity Framework (EF) we used ICollection, now List
+    // added 'virtual' for lazy loading
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>(); // for Entity Framework (EF) we used ICollection, now List
 
 
 }
