@@ -1,23 +1,14 @@
-import { useEffect } from "react";
-import api from "./services/api"; // Bizim yazdığımız santral
+import AppointmentList from "./components/AppointmentList";
 
 function App() {
-  useEffect(() => {
-    // Başına slash koymadık, böylece http://localhost:5199/api/Appointments oldu ✅
-    api
-      .get("Appointments") // Başında '/' yok! Böylece baseURL ile birleşir. ✅
-      .then((response) => {
-        console.log("Aga veriler sonunda geldi! ✅", response.data);
-      })
-      .catch((error) => {
-        console.error("Aga yine bir sorun var: ", error);
-      });
-  }, []);
-
   return (
-    <div>
-      <h1>BarberSaaS Test Sayfası</h1>
-      <p>Konsolu (F12) kontrol et kanka!</p>
+    <div className="App">
+      <header style={{ textAlign: "center", margin: "20px" }}>
+        <h1>BarberSaaS Yönetim Paneli</h1>
+      </header>
+      <main>
+        <AppointmentList />
+      </main>
     </div>
   );
 }
