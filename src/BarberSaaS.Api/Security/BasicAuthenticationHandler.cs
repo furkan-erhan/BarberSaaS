@@ -26,7 +26,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         try
         {
-           var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]!);
+            var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]!);
 
             if (authHeader.Scheme != "Basic")
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Scheme"));
@@ -35,9 +35,9 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':', 2);
             var username = credentials[0];
             var password = credentials[1];
-         
+
             // Temporary in-memory credentials (DO NOT use this in production)
-            if (username != "admin" || password != "Admin123!")
+            if (username != "admin" || password != "admin")
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Credentials"));
 
             var claims = new[]
