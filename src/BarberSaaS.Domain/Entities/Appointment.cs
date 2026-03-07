@@ -10,7 +10,8 @@ public class Appointment : BaseEntity
     // Navigation Property. Used 'virtual' for lazy loading
     public virtual BarberShop BarberShop { get; set; } = null!;
 
-    public Guid CustomerId { get; set; }
+    public string UserId { get; set; } = string.Empty; // Foreign Key
+    public virtual ApplicationUser User { get; set; } = null!; // Navigation Property
 
     public Guid EmployeeId { get; set; }
 
