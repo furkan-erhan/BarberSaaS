@@ -7,7 +7,7 @@ public class AppointmentDto
 
     public string BarberShopName { get; set; } = string.Empty;
 
-    public Guid CustomerId { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public Guid EmployeeId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

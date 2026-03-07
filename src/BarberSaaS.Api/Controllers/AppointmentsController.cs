@@ -6,6 +6,7 @@ using BarberSaaS.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -21,13 +22,20 @@ public class AppointmentsController : ControllerBase
         _context = context;
         _mapper = mapper; // 2. Inject Mapper
     }
+
+    
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) // 3. Use DTO as input
+    public async Task<IActionResult> Create(CreateAppointmentDto appointmentDto) 
     {
-        // 4. Map DTO back to Entity for saving to Database
+        
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if(string.IsNullOrEmpty(userId)) return Unauthorized("Kimlik dogrulanamadi, oncelikle giris yap !");
+        
         var appointment = _mapper.Map<Appointment>(appointmentDto);
 
+        appointment.UserId = userId;
         appointment.Status = AppointmentStatus.Pending;
         appointment.CreatedAt = DateTime.UtcNow;
         appointment.UpdatedAt = DateTime.UtcNow;
