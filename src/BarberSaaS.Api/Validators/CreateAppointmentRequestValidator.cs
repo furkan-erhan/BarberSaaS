@@ -11,7 +11,6 @@ public class CreateAppointmentRequestValidator : AbstractValidator<CreateAppoint
     {
         RuleFor(x => x.BarberShopId).NotEmpty();
         RuleFor(x => x.EmployeeId).NotEmpty();
-        RuleFor(x => x.CustomerId).NotEmpty();
 
         RuleFor(x => x.StartTime)
             .NotEmpty()
