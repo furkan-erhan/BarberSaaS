@@ -19,6 +19,19 @@ const AppointmentList = () => {
       });
   }, []);
 
+  const handleDelete = async (id: string) => {
+    if(!window.confirm("Randevuyu silmek istiyor musun ?")) return;
+
+    try{
+      await api.delete(`Appointments/${id}`);
+      setAppointments((prev) => prev.filter((app) => app.id !== id));
+      alert("Randevu basariyla silindi !");
+    }catch(error){
+      console.log("Randevu silme islemi hatali : ",error);
+      alert("Randevu silme islemi yapilamadi");
+    }
+  }
+
   if (loading) return <p>Yükleniyor...</p>;
 
   return (
@@ -45,6 +58,11 @@ const AppointmentList = () => {
               </td>
               <td>{app.price}</td>
               <td>{app.status}</td>
+              <td>
+                <button onClick={() => handleDelete(app.id)} style={{backgroundColor: 'red', color:'white', border:'none', padding:'5px 10px', cursor:'pointer', borderRadius:'4px' }}>
+                  Sil
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
