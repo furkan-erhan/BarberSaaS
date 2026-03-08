@@ -53,15 +53,20 @@ public class AppointmentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
-        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId &&!x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment has not found");
 
         _mapper.Map(appointmentDto, existingAppointment);
+        existingAppointment.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
         return NoContent();
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -71,16 +76,19 @@ public class AppointmentsController : ControllerBase
 
         var appointments = await _context.Appointments
             .Where(a => a.UserId == currentUserId && !a.IsDeleted)
-            .Include(a => a.BarberShopId)
+            .Include(a => a.BarberShop)
             .ToListAsync();
 
         return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId && !x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
 
