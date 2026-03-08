@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using BarberSaaS.Api.Validators;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -52,27 +53,42 @@ public class AppointmentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
-        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId &&!x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment has not found");
 
         _mapper.Map(appointmentDto, existingAppointment);
+        existingAppointment.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
         return NoContent();
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var appointments = await _context.Appointments.Include(a => a.BarberShop).Where(x => !x.IsDeleted).ToListAsync();
-        var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
-        return Ok(appointmentsDto);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if(string.IsNullOrEmpty(currentUserId)) return Unauthorized("Belirsiz kimlik, bos liste donduruluyor...");
+
+        var appointments = await _context.Appointments
+            .Where(a => a.UserId == currentUserId && !a.IsDeleted)
+            .Include(a => a.BarberShop)
+            .ToListAsync();
+
+        return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId && !x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
 
@@ -85,8 +101,17 @@ public class AppointmentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+
         if (appointment == null) throw new KeyNotFoundException("Appointment not found");
+
+        if(appointment.UserId != currentUserId)
+        {
+            return Forbid("Baskasinin randevusunu goruntuleyemezsin !");
+        }
 
         appointment.IsDeleted = true;
         appointment.UpdatedAt = DateTime.UtcNow;

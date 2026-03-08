@@ -2,6 +2,7 @@ using BarberSaaS.Api.DTOs;
 using BarberSaaS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; 
 using System.IdentityModel.Tokens.Jwt; 
 using System.Security.Claims;
@@ -77,5 +78,21 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("list")]
+    public async Task<IActionResult> ListUsers()
+    {
+        var users = await _userManager.Users.ToListAsync();
+
+        var userList = users.Select(user => new UserListDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            PhoneNumber = user.PhoneNumber
+        });
+
+        return Ok(userList);
+    }
 
 }
