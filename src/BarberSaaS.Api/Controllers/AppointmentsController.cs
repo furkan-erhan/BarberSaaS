@@ -93,8 +93,17 @@ public class AppointmentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+
         if (appointment == null) throw new KeyNotFoundException("Appointment not found");
+
+        if(appointment.UserId != currentUserId)
+        {
+            return Forbid("Baskasinin randevusunu goruntuleyemezsin !");
+        }
 
         appointment.IsDeleted = true;
         appointment.UpdatedAt = DateTime.UtcNow;
