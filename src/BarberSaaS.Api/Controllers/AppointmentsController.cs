@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using BarberSaaS.Api.Validators;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -64,9 +65,16 @@ public class AppointmentsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var appointments = await _context.Appointments.Include(a => a.BarberShop).Where(x => !x.IsDeleted).ToListAsync();
-        var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
-        return Ok(appointmentsDto);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if(string.IsNullOrEmpty(currentUserId)) return Unauthorized("Belirsiz kimlik, bos liste donduruluyor...");
+
+        var appointments = await _context.Appointments
+            .Where(a => a.UserId == currentUserId && !a.IsDeleted)
+            .Include(a => a.BarberShopId)
+            .ToListAsync();
+
+        return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
     }
 
     [HttpGet("{id}")]
