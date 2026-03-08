@@ -116,4 +116,19 @@ app.UseAuthentication(); // Kimsin?
 app.UseAuthorization();  // Yetkin var mı?
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        
+        await DbInitializer.InitializeAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Veritabanına roller eklenirken bir hata oluştu aga!");
+    }
+}
 app.Run();

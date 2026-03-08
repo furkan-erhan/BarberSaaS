@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BarberSaaS.Api.Validators;
+using Microsoft.AspNetCore.Identity;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -16,12 +17,14 @@ namespace BarberSaaS.Api.Controllers;
 public class AppointmentsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IMapper _mapper; // 1. Add Mapper
+    private readonly IMapper _mapper; 
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public AppointmentsController(AppDbContext context, IMapper mapper)
+    public AppointmentsController(AppDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager)
     {
         _context = context;
-        _mapper = mapper; // 2. Inject Mapper
+        _mapper = mapper; 
+        _userManager = userManager;
     }
 
     
@@ -72,13 +75,28 @@ public class AppointmentsController : ControllerBase
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+        var isAdmin = User.IsInRole("Admin");
+        var isBarber = User.IsInRole("Barber");
+        
         if(string.IsNullOrEmpty(currentUserId)) return Unauthorized("Belirsiz kimlik, bos liste donduruluyor...");
 
-        var appointments = await _context.Appointments
-            .Where(a => a.UserId == currentUserId && !a.IsDeleted)
+        var query = _context.Appointments
             .Include(a => a.BarberShop)
-            .ToListAsync();
+            .Where(a => !a.IsDeleted);
 
+        if(isAdmin) {}
+        else if (isBarber)
+        {
+            var user = await _userManager.FindByIdAsync(currentUserId!);
+
+            if (user?.BarberShopId == null) return Forbid(" berbersin ama dukkanin belirsiz!");
+
+            query = query.Where(a => a.BarberShopId == user.BarberShopId);
+        } else
+        {
+            query = query.Where(a => a.UserId == currentUserId);
+        }
+        var appointments = await query.ToListAsync();
         return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
     }
 
