@@ -61,6 +61,7 @@ public class AppointmentsController : ControllerBase
         var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId &&!x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment has not found");
+        if(existingAppointment.UserId != currentUserId && User.IsInRole("Admin")) return Forbid();
 
         _mapper.Map(appointmentDto, existingAppointment);
         existingAppointment.UpdatedAt = DateTime.UtcNow;
@@ -91,7 +92,7 @@ public class AppointmentsController : ControllerBase
 
             if (user?.BarberShopId == null) return Forbid(" berbersin ama dukkanin belirsiz!");
 
-            query = query.Where(a => a.BarberShopId == user.BarberShopId);
+            query = query.Where(a => a.BarberShopId == user.BarberShopId || a.UserId == currentUserId);
         } else
         {
             query = query.Where(a => a.UserId == currentUserId);
@@ -126,10 +127,12 @@ public class AppointmentsController : ControllerBase
 
         if (appointment == null) throw new KeyNotFoundException("Appointment not found");
 
-        if(appointment.UserId != currentUserId)
+
+        if (appointment.UserId != currentUserId && !User.IsInRole("Admin"))
         {
-            return Forbid("Baskasinin randevusunu goruntuleyemezsin !");
+            return Forbid();
         }
+
 
         appointment.IsDeleted = true;
         appointment.UpdatedAt = DateTime.UtcNow;

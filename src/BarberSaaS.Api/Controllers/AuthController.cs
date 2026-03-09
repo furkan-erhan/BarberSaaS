@@ -1,5 +1,6 @@
 using BarberSaaS.Api.DTOs;
 using BarberSaaS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +103,20 @@ public class AuthController : ControllerBase
         });
 
         return Ok(userList);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("assign-barber-role")]
+    public async Task<IActionResult> AssignBarberRole(string email, Guid shopId)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if(user == null) return NotFound("Kullanici bulunamadi !");
+
+        user.BarberShopId = shopId;
+        await _userManager.AddToRoleAsync(user,"Barber");
+        
+        await _userManager.UpdateAsync(user);
+        return Ok($"{email} artik berber oldu !");
     }
 
 }
