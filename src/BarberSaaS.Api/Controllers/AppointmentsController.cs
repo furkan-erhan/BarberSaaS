@@ -34,12 +34,31 @@ public class AppointmentsController : ControllerBase
     {
         
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        
         if(string.IsNullOrEmpty(userId)) return Unauthorized("Kimlik dogrulanamadi, oncelikle giris yap !");
+
+        var targetBarber = await _userManager.FindByIdAsync(appointmentDto.EmployeeId.ToString());
+        if(targetBarber == null) return NotFound("Boyle bir calisan bulunamadi");
+
+        var roles = await _userManager.GetRolesAsync(targetBarber);
+        if(!roles.Contains("Barber")) return BadRequest("Randevu almaya calistigin kisi berber degil !");
+
+        if(targetBarber.BarberShopId != appointmentDto.BarberShopId) return BadRequest("O berber bu dukkanin calisani degil");
+
+        var startTime = appointmentDto.StartTime;
+        var endTime = startTime.AddMinutes(40);
+        
+        var isBusy = await _context.Appointments. 
+            AnyAsync(a => !a.IsDeleted &&
+                        a.BarberShopId == appointmentDto.BarberShopId &&
+                        a.EmployeeId == appointmentDto.EmployeeId &&
+                        a.StartTime < endTime &&
+                        startTime < a.EndTime);
+        if(isBusy) return BadRequest("Bu saat dilimi dolu, baska saate veya baska berbere randevu al");
+
         
         var appointment = _mapper.Map<Appointment>(appointmentDto);
-
-        appointment.UserId = userId;
+        appointment.UserId = userId!;
+        appointment.EndTime = endTime;
         appointment.Status = AppointmentStatus.Pending;
         appointment.CreatedAt = DateTime.UtcNow;
         appointment.UpdatedAt = DateTime.UtcNow;
@@ -48,7 +67,6 @@ public class AppointmentsController : ControllerBase
         _context.Appointments.Add(appointment);
         await _context.SaveChangesAsync();
 
-        // 5. Return the DTO version to the user
         return Ok(_mapper.Map<AppointmentDto>(appointment));
     }
 

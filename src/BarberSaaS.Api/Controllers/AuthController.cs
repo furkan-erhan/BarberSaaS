@@ -88,7 +88,7 @@ public class AuthController : ControllerBase
         });
     }
 
-    [HttpGet("list")]
+    [HttpGet("list-everyone")]
     public async Task<IActionResult> ListUsers()
     {
         var users = await _userManager.Users.ToListAsync();
@@ -117,6 +117,16 @@ public class AuthController : ControllerBase
         
         await _userManager.UpdateAsync(user);
         return Ok($"{email} artik berber oldu !");
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("list-barbers")]
+    public async Task<IActionResult> ListBarbers()
+    {
+        var barbers = await _userManager.GetUsersInRoleAsync("Barber");
+        if(barbers == null || !barbers.Any()) return NotFound("No barber found");
+
+        return Ok(barbers);
     }
 
 }
