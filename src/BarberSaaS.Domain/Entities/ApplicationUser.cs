@@ -9,4 +9,9 @@ public class ApplicationUser : IdentityUser
     public string LastName {get;set;} = string.Empty;
 
     public virtual ICollection<Appointment> Appointments {get;set;} = new List<Appointment>();
+
+
+    // below is for barbers and they are nullable
+    public Guid? BarberShopId {get;set;}
+    public BarberShop? BarberShop {get;set;}
 }

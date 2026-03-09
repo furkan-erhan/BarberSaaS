@@ -10,6 +10,8 @@ function App() {
 
     if(token){
       setIsAuthenticated(true);
+    }else {
+    setIsAuthenticated(false);
     }
   },[]);
 

@@ -1,7 +1,9 @@
 using BarberSaaS.Api.DTOs;
 using BarberSaaS.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens; 
 using System.IdentityModel.Tokens.Jwt; 
 using System.Security.Claims;
@@ -38,6 +40,7 @@ public class AuthController : ControllerBase
 
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(user, "Customer");
             return Ok("Kullanici kaydi basarili");
         }
         return BadRequest(result.Errors);
@@ -53,12 +56,20 @@ public class AuthController : ControllerBase
         var result = await _userManager.CheckPasswordAsync(user,loginDto.Password);
         if(!result) return Unauthorized("Email veya sifre hatali");
 
-        var claims = new[] {
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        var authClaims = new List<Claim>
+        {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Email, user.Email!),
             new Claim("FirstName", user.FirstName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+        
+        foreach (var role in userRoles)
+        {
+            authClaims.Add(new Claim(ClaimTypes.Role, role));
+        }   
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -66,7 +77,7 @@ public class AuthController : ControllerBase
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
-            claims: claims,
+            claims: authClaims,
             expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"])),
             signingCredentials: creds
         );
@@ -77,5 +88,35 @@ public class AuthController : ControllerBase
         });
     }
 
+    [HttpGet("list")]
+    public async Task<IActionResult> ListUsers()
+    {
+        var users = await _userManager.Users.ToListAsync();
+
+        var userList = users.Select(user => new UserListDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email!,
+            PhoneNumber = user.PhoneNumber
+        });
+
+        return Ok(userList);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("assign-barber-role")]
+    public async Task<IActionResult> AssignBarberRole(string email, Guid shopId)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if(user == null) return NotFound("Kullanici bulunamadi !");
+
+        user.BarberShopId = shopId;
+        await _userManager.AddToRoleAsync(user,"Barber");
+        
+        await _userManager.UpdateAsync(user);
+        return Ok($"{email} artik berber oldu !");
+    }
 
 }

@@ -46,7 +46,7 @@ public class BarberShopsController : ControllerBase
         return Ok(_mapper.Map<BarberShopDto>(shop));
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreateBarberShopDto barberShopDto)
     {
@@ -61,7 +61,7 @@ public class BarberShopsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = shop.Id }, _mapper.Map<BarberShopDto>(shop));
     }
 
-    [Authorize] 
+    [Authorize(Roles = "Admin")] 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateBarberShopDto barberShopDto)
     {
@@ -77,7 +77,7 @@ public class BarberShopsController : ControllerBase
     }
 
 
-    [Authorize] 
+    [Authorize(Roles = "Admin")] 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {

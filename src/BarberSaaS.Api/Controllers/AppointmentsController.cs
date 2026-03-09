@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using BarberSaaS.Api.Validators;
+using Microsoft.AspNetCore.Identity;
 
 namespace BarberSaaS.Api.Controllers;
 
@@ -15,12 +17,14 @@ namespace BarberSaaS.Api.Controllers;
 public class AppointmentsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IMapper _mapper; // 1. Add Mapper
+    private readonly IMapper _mapper; 
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public AppointmentsController(AppDbContext context, IMapper mapper)
+    public AppointmentsController(AppDbContext context, IMapper mapper, UserManager<ApplicationUser> userManager)
     {
         _context = context;
-        _mapper = mapper; // 2. Inject Mapper
+        _mapper = mapper; 
+        _userManager = userManager;
     }
 
     
@@ -52,27 +56,58 @@ public class AppointmentsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, UpdateAppointmentDto appointmentDto)
     {
-        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId &&!x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment has not found");
+        if(existingAppointment.UserId != currentUserId && User.IsInRole("Admin")) return Forbid();
 
         _mapper.Map(appointmentDto, existingAppointment);
+        existingAppointment.UpdatedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync();
         return NoContent();
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var appointments = await _context.Appointments.Include(a => a.BarberShop).Where(x => !x.IsDeleted).ToListAsync();
-        var appointmentsDto = _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
-        return Ok(appointmentsDto);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var isAdmin = User.IsInRole("Admin");
+        var isBarber = User.IsInRole("Barber");
+        
+        if(string.IsNullOrEmpty(currentUserId)) return Unauthorized("Belirsiz kimlik, bos liste donduruluyor...");
+
+        var query = _context.Appointments
+            .Include(a => a.BarberShop)
+            .Where(a => !a.IsDeleted);
+
+        if(isAdmin) {}
+        else if (isBarber)
+        {
+            var user = await _userManager.FindByIdAsync(currentUserId!);
+
+            if (user?.BarberShopId == null) return Forbid(" berbersin ama dukkanin belirsiz!");
+
+            query = query.Where(a => a.BarberShopId == user.BarberShopId || a.UserId == currentUserId);
+        } else
+        {
+            query = query.Where(a => a.UserId == currentUserId);
+        }
+        var appointments = await query.ToListAsync();
+        return Ok(_mapper.Map<IEnumerable<AppointmentDto>>(appointments));
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var existingAppointment = await _context.Appointments.Include(a => a.BarberShop).FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId && !x.IsDeleted);
 
         if (existingAppointment == null) throw new KeyNotFoundException("Appointment not found");
 
@@ -85,8 +120,19 @@ public class AppointmentsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
+
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var appointment = await _context.Appointments.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+
         if (appointment == null) throw new KeyNotFoundException("Appointment not found");
+
+
+        if (appointment.UserId != currentUserId && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
 
         appointment.IsDeleted = true;
         appointment.UpdatedAt = DateTime.UtcNow;
