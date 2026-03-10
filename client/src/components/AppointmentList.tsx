@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import {getAppointments, deleteAppointment} from "../services/api";
 import { IAppointment } from "../types/appointment";
 
 const AppointmentList = () => {
@@ -7,23 +7,26 @@ const AppointmentList = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    api
-      .get<IAppointment[]>("Appointments")
+    loadAppointments();
+  }, []);
+
+  const loadAppointments = () => {
+    setLoading(true);
+    getAppointments()
       .then((response) => {
         setAppointments(response.data);
-        setLoading(false);
       })
       .catch((error) => {
-        console.error("Appointmentlari cekerken hata oldu : ", error);
-        setLoading(false);
-      });
-  }, []);
+        console.error("Hata : ", error);
+      })
+      .finally(() => setLoading(false));
+  };
 
   const handleDelete = async (id: string) => {
     if(!window.confirm("Randevuyu silmek istiyor musun ?")) return;
 
     try{
-      await api.delete(`Appointments/${id}`);
+      await deleteAppointment(id);
       setAppointments((prev) => prev.filter((app) => app.id !== id));
       alert("Randevu basariyla silindi !");
     }catch(error){

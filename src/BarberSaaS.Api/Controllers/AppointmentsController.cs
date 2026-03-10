@@ -37,7 +37,7 @@ public class AppointmentsController : ControllerBase
         if(string.IsNullOrEmpty(userId)) return Unauthorized("Kimlik dogrulanamadi, oncelikle giris yap !");
 
         var targetBarber = await _userManager.FindByIdAsync(appointmentDto.EmployeeId.ToString());
-        if(targetBarber == null) return NotFound("Boyle bir calisan bulunamadi");
+        if(targetBarber == null) return NotFound("Boyle bir kisi bulunamadi");
 
         var roles = await _userManager.GetRolesAsync(targetBarber);
         if(!roles.Contains("Barber")) return BadRequest("Randevu almaya calistigin kisi berber degil !");
@@ -47,7 +47,7 @@ public class AppointmentsController : ControllerBase
         var startTime = appointmentDto.StartTime;
         var endTime = startTime.AddMinutes(40);
         
-        var isBusy = await _context.Appointments. 
+        var isBusy = await _context.Appointments. // conflict check
             AnyAsync(a => !a.IsDeleted &&
                         a.BarberShopId == appointmentDto.BarberShopId &&
                         a.EmployeeId == appointmentDto.EmployeeId &&
