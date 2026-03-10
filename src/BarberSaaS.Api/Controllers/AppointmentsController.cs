@@ -37,18 +37,18 @@ public class AppointmentsController : ControllerBase
         if(string.IsNullOrEmpty(userId)) return Unauthorized("Kimlik dogrulanamadi, oncelikle giris yap !");
 
         var targetBarber = await _userManager.FindByIdAsync(appointmentDto.EmployeeId.ToString());
-        if(targetBarber == null) return NotFound("Boyle bir calisan bulunamadi");
+        if(targetBarber == null) return NotFound("Boyle bir kisi bulunamadi");
 
         var roles = await _userManager.GetRolesAsync(targetBarber);
         if(!roles.Contains("Barber")) return BadRequest("Randevu almaya calistigin kisi berber degil !");
 
         if(targetBarber.BarberShopId != appointmentDto.BarberShopId) return BadRequest("O berber bu dukkanin calisani degil");
 
-        var startTime = appointmentDto.StartTime;
+        var startTime = DateTime.SpecifyKind(appointmentDto.StartTime, DateTimeKind.Utc);
         var endTime = startTime.AddMinutes(40);
         
-        var isBusy = await _context.Appointments. 
-            AnyAsync(a => !a.IsDeleted &&
+        var isBusy = await _context.Appointments // conflict check
+            .AnyAsync(a => !a.IsDeleted &&
                         a.BarberShopId == appointmentDto.BarberShopId &&
                         a.EmployeeId == appointmentDto.EmployeeId &&
                         a.StartTime < endTime &&
@@ -58,10 +58,12 @@ public class AppointmentsController : ControllerBase
         
         var appointment = _mapper.Map<Appointment>(appointmentDto);
         appointment.UserId = userId!;
+        appointment.StartTime = startTime;
         appointment.EndTime = endTime;
         appointment.Status = AppointmentStatus.Pending;
         appointment.CreatedAt = DateTime.UtcNow;
         appointment.UpdatedAt = DateTime.UtcNow;
+        appointment.Price = 350; // daha sonra -> tras tutarini dukkana gore belirlememiz lazim
         appointment.IsDeleted = false;
 
         _context.Appointments.Add(appointment);

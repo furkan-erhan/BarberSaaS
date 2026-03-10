@@ -120,13 +120,24 @@ public class AuthController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpGet("list-barbers")]
-    public async Task<IActionResult> ListBarbers()
+    [HttpGet("list-all-barbers")]
+    public async Task<IActionResult> ListAllBarbers()
     {
         var barbers = await _userManager.GetUsersInRoleAsync("Barber");
         if(barbers == null || !barbers.Any()) return NotFound("No barber found");
 
         return Ok(barbers);
+    }
+
+    [HttpGet("list-barbers/{shopId}")]
+    public async Task<IActionResult> ListBarbersOfShop(Guid shopId)
+    {
+        var barbers = await _userManager.GetUsersInRoleAsync("Barber");
+
+        var filteredBarbers = barbers.Where(u => u.BarberShopId == shopId).ToList();
+        if(!filteredBarbers.Any()) return NotFound("Bu dukkanda henuz berber yok");
+
+        return Ok(filteredBarbers);
     }
 
 }
