@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from "react-router-dom";
 import AppointmentList from "./components/AppointmentList";
 import BarberShopList from "./components/BarberShopList"; 
+import BookingPage from "./components/BookingPage";
 import Auth from "./components/Auth";
 import { logout } from "./services/api";
 
@@ -65,7 +66,7 @@ function App() {
             } />
 
             <Route path="/book/:shopId" element={
-              isAuthenticated ? <div>Burası BookingPage olacak !</div> : <Navigate to="/login" />
+              isAuthenticated ? <BookingPage/> : <Navigate to="/login" /> 
             } />
 
             <Route path="*" element={<Navigate to="/" />} />

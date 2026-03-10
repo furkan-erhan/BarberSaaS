@@ -44,11 +44,11 @@ public class AppointmentsController : ControllerBase
 
         if(targetBarber.BarberShopId != appointmentDto.BarberShopId) return BadRequest("O berber bu dukkanin calisani degil");
 
-        var startTime = appointmentDto.StartTime;
+        var startTime = DateTime.SpecifyKind(appointmentDto.StartTime, DateTimeKind.Utc);
         var endTime = startTime.AddMinutes(40);
         
-        var isBusy = await _context.Appointments. // conflict check
-            AnyAsync(a => !a.IsDeleted &&
+        var isBusy = await _context.Appointments // conflict check
+            .AnyAsync(a => !a.IsDeleted &&
                         a.BarberShopId == appointmentDto.BarberShopId &&
                         a.EmployeeId == appointmentDto.EmployeeId &&
                         a.StartTime < endTime &&
@@ -58,10 +58,12 @@ public class AppointmentsController : ControllerBase
         
         var appointment = _mapper.Map<Appointment>(appointmentDto);
         appointment.UserId = userId!;
+        appointment.StartTime = startTime;
         appointment.EndTime = endTime;
         appointment.Status = AppointmentStatus.Pending;
         appointment.CreatedAt = DateTime.UtcNow;
         appointment.UpdatedAt = DateTime.UtcNow;
+        appointment.Price = 350; // daha sonra -> tras tutarini dukkana gore belirlememiz lazim
         appointment.IsDeleted = false;
 
         _context.Appointments.Add(appointment);

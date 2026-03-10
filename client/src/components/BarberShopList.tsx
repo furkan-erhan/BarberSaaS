@@ -39,7 +39,7 @@ const BarberShopList : React.FC = () => {
                             <p>{shop.phoneNumber || 'Telefon numarasi belirtilmemis'}</p>
 
                             <button
-                                onClick={() => window.location.href = '/book/${shop.id}'}
+                                onClick={() => window.location.href = `/book/${shop.id}`}
                                 style={buttonStyle}
                                 >
                                     Randevu Al

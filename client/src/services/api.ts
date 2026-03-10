@@ -28,7 +28,7 @@ export const logout = () => {
 export const getAppointments = () => api.get<IAppointment[]>(`/Appointments`);
 export const deleteAppointment = (id: string) => api.delete(`/Appointments/${id}`);
 export const getBarberShops = () => api.get<IBarberShop[]>(`/BarberShops`);
-export const getBarbersByShops = (shopId: string) => api.get<IEmployee[]>(`/Auth/list-barber/${shopId}`)
+export const getBarbersByShops = (shopId: string) => api.get<IEmployee[]>(`/Auth/list-barbers/${shopId}`)
 export const createAppointment = (data: {barberShopId: string, employeeId: string, startTime: string}) => api.post(`/Appointments`,data);
 
 export default api;
