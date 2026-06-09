@@ -2,7 +2,7 @@ using BarberSaaS.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper; // 1. Add this
-using BarberSaaS.Api.DTOs;
+using BarberSaaS.Application.DTOs;
 using BarberSaaS.Domain.Entities; // 2. Add this to find BarberShopDto
 using Microsoft.AspNetCore.Authorization;
 

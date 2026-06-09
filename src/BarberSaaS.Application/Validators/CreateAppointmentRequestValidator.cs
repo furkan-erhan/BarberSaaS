@@ -1,5 +1,5 @@
 using FluentValidation;
-using BarberSaaS.Api.DTOs;
+using BarberSaaS.Application.DTOs;
 using System.Data;
 
 namespace BarberSaaS.Api.Validators;
