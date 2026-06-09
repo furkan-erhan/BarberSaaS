@@ -29,7 +29,13 @@ builder.Services.AddControllers();
 
 // 2. Altyapı ve Identity Servisleri
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddAutoMapper(typeof(Program));
+
+
+
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddMaps(typeof(BarberSaaS.Application.DTOs.AppointmentDto).Assembly);
+});
 
 // Identity Yapılandırması: ApplicationUser ve DbContext bağlantısı
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
@@ -131,4 +137,5 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Veritabanına roller eklenirken bir hata oluştu aga!");
     }
 }
+
 app.Run();

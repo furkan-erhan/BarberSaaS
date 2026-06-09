@@ -1,5 +1,5 @@
 using AutoMapper;
-using BarberSaaS.Api.DTOs;
+using BarberSaaS.Application.DTOs;
 using BarberSaaS.Domain.Entities;
 using BarberSaaS.Domain.Enums;
 using BarberSaaS.Infrastructure.Persistence;

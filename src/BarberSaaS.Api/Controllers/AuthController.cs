@@ -1,4 +1,4 @@
-using BarberSaaS.Api.DTOs;
+using BarberSaaS.Application.DTOs;
 using BarberSaaS.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

@@ -1,4 +1,4 @@
-namespace BarberSaaS.Api.DTOs;
+namespace BarberSaaS.Application.DTOs;
 
 public class UserListDto
 {

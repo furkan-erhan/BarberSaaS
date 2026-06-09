@@ -1,6 +1,6 @@
 using System.Net;
 using System.Text.Json;
-using BarberSaaS.Api.DTOs;
+using BarberSaaS.Application.DTOs;
 
 namespace BarberSaaS.Api.Middleware;
 

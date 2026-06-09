@@ -34,7 +34,7 @@ public static class DbInitializer {
                 EmailConfirmed = true
             };
 
-            // Şifreyi buraya şimdilik sabit veriyoruz, ilk girişte değiştirebilirsin kanka
+            // Şifreyi buraya şimdilik sabit veriyoruz, ilk girişte değiştirebilirsin
             var result = await userManager.CreateAsync(newAdmin, "123456Aa");
             
             if (result.Succeeded)
