@@ -1,68 +1,265 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* ─── Custom Design Tokens ─────────────────────────────────────────── */
+@theme {
+  /* Fonts */
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  /* Color Palette — Luxury Dark */
+  --color-bg-base: #09090b;
+  --color-bg-raised: #111113;
+  --color-bg-surface: #18181b;
+  --color-bg-subtle: #1f1f23;
+  --color-border: #2a2a2e;
+  --color-border-dim: #222226;
+
+  /* Gold accent */
+  --color-gold-400: #d4a96a;
+  --color-gold-500: #c5a880;
+  --color-gold-600: #b3936a;
+  --color-gold-700: #9a7a54;
+
+  /* Text */
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #52525b;
+
+  /* Status */
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+}
+
+/* ─── Base Reset & Body ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
   min-height: 100vh;
+  line-height: 1.6;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* ─── Typography helpers ─────────────────────────────────────────────── */
+.font-serif {
+  font-family: var(--font-serif);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-subtle);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-700);
+}
+
+/* ─── Focus ring ─────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-gold-500);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Micro-animation keyframes ─────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
-  a:hover {
-    color: #747bff;
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  button {
-    background-color: #f9f9f9;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
   }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-gold {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(197, 168, 128, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(197, 168, 128, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease both;
+}
+
+.animate-slide-in {
+  animation: slideInLeft 0.35s ease both;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes barberPole {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 40px;
+  }
+}
+
+.animate-barber-pole {
+  background: repeating-linear-gradient(
+    -45deg,
+    #ef4444,
+    #ef4444 8px,
+    #ffffff 8px,
+    #ffffff 16px,
+    #3b82f6 16px,
+    #3b82f6 24px,
+    #ffffff 24px,
+    #ffffff 32px
+  );
+  background-size: 32px 32px;
+  animation: barberPole 1.5s linear infinite;
+}
+
+@keyframes scissorSnip {
+  0%, 100% {
+    transform: rotate(90deg) scale(1);
+  }
+  50% {
+    transform: rotate(60deg) scale(1.1);
+  }
+}
+
+.animate-scissor-snip {
+  animation: scissorSnip 0.4s ease-in-out infinite;
+}
+
+@keyframes rollDigit {
+  0% {
+    transform: translateY(-40%) scale(0.9);
+    filter: blur(1px);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+.animate-roll-digit {
+  animation: rollDigit 0.3s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+/* ─── Marquee (infinite horizontal scroll) ─────────────────────────── */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* ─── Tick-up animation for count-in numbers ───────────────────────── */
+@keyframes tickUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-tick-up {
+  animation: tickUp 0.5s cubic-bezier(0.22, 0.68, 0, 1.1) both;
+}
+
+/* ─── Glow pulse for premium highlight elements ────────────────────── */
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(197, 168, 128, 0.15));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(197, 168, 128, 0.35));
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Font helpers ─────────────────────────────────────────────────── */
+.font-italic {
+  font-style: italic;
 }
