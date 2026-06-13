@@ -1,49 +1,41 @@
 import React from "react";
-import { MapPin, Phone, Star, ArrowRight, Scissors } from "lucide-react";
+import { MapPin, Phone, Star, ArrowRight, Scissors, Navigation } from "lucide-react";
 import { IBarberShop } from "../types/barberShop";
 
 // ─── Props ────────────────────────────────────────────────────────────
 interface BarberShopCardProps {
   shop: IBarberShop;
   imageUrl?: string;
-  rating?: number;
-  reviewCount?: number;
+  distance?: number;
   onBookClick: (shopId: string) => void;
   onSelectClick?: (shop: IBarberShop) => void;
 }
 
 // ─── Star rating display ──────────────────────────────────────────────
-const StarRating: React.FC<{ rating: number }> = ({ rating }) => {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          size={11}
-          className={
-            star <= Math.round(rating)
-              ? "text-[#c5a880] fill-[#c5a880]"
-              : "text-[#2a2a2e] fill-[#2a2a2e]"
-          }
-        />
-      ))}
-    </div>
-  );
-};
+const StarRating: React.FC<{ rating: number }> = ({ rating }) => (
+  <div className="flex items-center gap-0.5">
+    {[1, 2, 3, 4, 5].map((star) => (
+      <Star
+        key={star}
+        size={11}
+        className={
+          star <= Math.round(rating)
+            ? "text-[#c5a880] fill-[#c5a880]"
+            : "text-[#2a2a2e] fill-[#2a2a2e]"
+        }
+      />
+    ))}
+  </div>
+);
 
-// ─── Placeholder image (gradient + scissors icon + stripes) ───────────
+// ─── Placeholder image ─────────────────────────────────────────────
 const PlaceholderImage: React.FC = () => (
   <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#1c1917] via-[#09090b] to-[#1e1b18] relative overflow-hidden">
-    {/* Diagonal striped background line accents */}
     <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,#c5a880_25%,transparent_25%,transparent_50%,#c5a880_50%,#c5a880_75%,transparent_75%,transparent)] bg-[length:24px_24px] pointer-events-none" />
-    
-    {/* Decorative circle glow */}
     <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-[#c5a880]/10 rounded-full blur-xl pointer-events-none" />
-    
     <div className="w-12 h-12 rounded-2xl bg-[#c5a880]/10 border border-[#c5a880]/20 flex items-center justify-center shadow-lg relative group-hover:scale-105 transition-transform duration-500">
       <Scissors size={20} className="text-[#c5a880] rotate-45" />
     </div>
-    
     <div className="text-center space-y-0.5">
       <span className="text-[#c5a880] text-[8px] tracking-[0.2em] font-extrabold uppercase block">SALON</span>
       <span className="text-[#f4f4f5] text-xs font-serif font-semibold italic">Luxury Grooming</span>
@@ -55,15 +47,15 @@ const PlaceholderImage: React.FC = () => (
 const BarberShopCard: React.FC<BarberShopCardProps> = ({
   shop,
   imageUrl,
-  rating = 4.8, // Fallback rating for premium presentation
-  reviewCount = 120, // Fallback reviews
+  distance,
   onBookClick,
   onSelectClick,
 }) => {
+  const rating = shop.rating ?? 4.8;
+  const reviewCount = shop.reviewCount ?? 120;
+
   const handleCardClick = () => {
-    if (onSelectClick) {
-      onSelectClick(shop);
-    }
+    if (onSelectClick) onSelectClick(shop);
   };
 
   return (
@@ -92,10 +84,16 @@ const BarberShopCard: React.FC<BarberShopCardProps> = ({
         )}
 
         {/* Rating badge (top-right) */}
-        {rating !== undefined && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#c5a880] to-[#e8d5b5] text-black px-2.5 py-1 text-[10px] font-extrabold shadow-lg shadow-black/30">
-            <Star size={10} className="fill-current stroke-[2.5]" />
-            <span>{rating.toFixed(1)}</span>
+        <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#c5a880] to-[#e8d5b5] text-black px-2.5 py-1 text-[10px] font-extrabold shadow-lg shadow-black/30">
+          <Star size={10} className="fill-current stroke-[2.5]" />
+          <span>{rating.toFixed(1)}</span>
+        </div>
+
+        {/* Price badge (top-left) */}
+        {shop.price !== undefined && (
+          <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-[#09090b]/80 backdrop-blur-sm border border-white/10 text-[#c5a880] px-2.5 py-1 text-[10px] font-extrabold shadow-md">
+            <span className="text-[9px] text-[#c5a880]/70">from</span>
+            <span>{shop.price} ₺</span>
           </div>
         )}
 
@@ -113,13 +111,11 @@ const BarberShopCard: React.FC<BarberShopCardProps> = ({
           {shop.name}
         </h3>
 
-        {/* Star rating (text form) */}
-        {rating !== undefined && (
-          <div className="flex items-center gap-2 mb-4">
-            <StarRating rating={rating} />
-            <span className="text-[#52525b] text-[10px] font-bold">({reviewCount} Yorum)</span>
-          </div>
-        )}
+        {/* Star rating */}
+        <div className="flex items-center gap-2 mb-4">
+          <StarRating rating={rating} />
+          <span className="text-[#52525b] text-[10px] font-bold">({reviewCount} Yorum)</span>
+        </div>
 
         {/* Info rows */}
         <div className="space-y-2 mb-5">
@@ -127,6 +123,16 @@ const BarberShopCard: React.FC<BarberShopCardProps> = ({
             <div className="flex items-start gap-2">
               <MapPin size={13} className="text-[#52525b] shrink-0 mt-0.5" />
               <p className="text-[#a1a1aa] text-xs font-medium leading-normal">{shop.address}</p>
+            </div>
+          )}
+
+          {/* Distance indicator */}
+          {distance !== undefined && (
+            <div className="flex items-center gap-2">
+              <Navigation size={13} className="text-[#c5a880] shrink-0" />
+              <p className="text-[#c5a880] text-xs font-semibold">
+                {distance.toFixed(1)} km uzaklıkta
+              </p>
             </div>
           )}
 
@@ -155,7 +161,7 @@ const BarberShopCard: React.FC<BarberShopCardProps> = ({
             group/btn w-full flex items-center justify-center gap-2
             rounded-xl py-3 px-5 text-xs font-bold
             bg-[#c5a880]/10 border border-[#c5a880]/20 text-[#c5a880]
-            transition-all duration-300 cursor-pointer
+            transition-all duration-300
             hover:bg-gradient-to-r hover:from-[#c5a880] hover:to-[#e8d5b5] hover:text-black hover:border-transparent
             hover:shadow-[0_6px_20px_rgba(197,168,128,0.2)]
           "

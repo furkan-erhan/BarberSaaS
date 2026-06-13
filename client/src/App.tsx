@@ -40,13 +40,14 @@ import { ILoginCredentials, IRegisterCredentials } from "./types/auth";
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const MOCK_SHOPS: IBarberShop[] = [
-  { id: "1", name: "Barber Kaya", slug: "barber-kaya", phoneNumber: "+90 555 111 2233", address: "Beşiktaş, İstanbul" },
-  { id: "2", name: "Classic Cut Studio", slug: "classic-cut", phoneNumber: "+90 532 234 5678", address: "Kadıköy, İstanbul" },
-  { id: "3", name: "The Razor's Edge", slug: "razors-edge", phoneNumber: "+90 546 345 6789", address: "Şişli, İstanbul" },
-  { id: "4", name: "Gentleman's Blade", slug: "gentlemans-blade", phoneNumber: "+90 533 456 7890", address: "Üsküdar, İstanbul" },
-  { id: "5", name: "Urban Barber Co.", slug: "urban-barber", phoneNumber: "+90 505 567 8901", address: "Bakırköy, İstanbul" },
-  { id: "6", name: "Royal Cuts", slug: "royal-cuts", phoneNumber: "+90 551 678 9012", address: "Ataşehir, İstanbul" },
+  { id: "1", name: "Barber Kaya", slug: "barber-kaya", phoneNumber: "+90 555 111 2233", address: "Beşiktaş, İstanbul", price: 150, latitude: 41.0422, longitude: 29.0082, rating: 4.8, reviewCount: 312 },
+  { id: "2", name: "Classic Cut Studio", slug: "classic-cut", phoneNumber: "+90 532 234 5678", address: "Kadıköy, İstanbul", price: 200, latitude: 40.9901, longitude: 29.0280, rating: 4.6, reviewCount: 187 },
+  { id: "3", name: "The Razor's Edge", slug: "razors-edge", phoneNumber: "+90 546 345 6789", address: "Şişli, İstanbul", price: 120, latitude: 41.0602, longitude: 28.9877, rating: 4.9, reviewCount: 524 },
+  { id: "4", name: "Gentleman's Blade", slug: "gentlemans-blade", phoneNumber: "+90 533 456 7890", address: "Üsküdar, İstanbul", price: 180, latitude: 41.0264, longitude: 29.0151, rating: 4.5, reviewCount: 98 },
+  { id: "5", name: "Urban Barber Co.", slug: "urban-barber", phoneNumber: "+90 505 567 8901", address: "Bakırköy, İstanbul", price: 160, latitude: 40.9782, longitude: 28.7946, rating: 4.7, reviewCount: 256 },
+  { id: "6", name: "Royal Cuts", slug: "royal-cuts", phoneNumber: "+90 551 678 9012", address: "Ataşehir, İstanbul", price: 250, latitude: 40.9847, longitude: 29.1064, rating: 5.0, reviewCount: 441 },
 ];
+
 
 const MOCK_EMPLOYEES: IEmployee[] = [
   { id: "e1", firstName: "Mehmet", lastName: "Yılmaz", barberShopId: "1" },

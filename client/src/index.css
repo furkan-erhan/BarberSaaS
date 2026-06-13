@@ -60,6 +60,13 @@ body {
   line-height: 1.6;
 }
 
+/* ─── Custom Cursor — hide native pointer on desktop ─────────────────── */
+@media (pointer: fine) {
+  html, body, *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
 #root {
   min-height: 100vh;
   display: flex;
@@ -262,4 +269,37 @@ body {
 /* ─── Font helpers ─────────────────────────────────────────────────── */
 .font-italic {
   font-style: italic;
+}
+
+/* ─── Cancel appointment exit animation ─────────────────────────────── */
+@keyframes cancelExit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+  40% {
+    opacity: 0.6;
+    transform: scale(0.97) translateY(-4px);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.93) translateY(-12px);
+    filter: blur(4px);
+  }
+}
+
+.animate-cancel-exit {
+  animation: cancelExit 0.45s cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+
+/* ─── Shimmer for VIP card ──────────────────────────────────────────── */
+@keyframes vipShimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(250%) skewX(-12deg); }
+}
+
+.animate-vip-shimmer {
+  animation: vipShimmer 3s ease-in-out infinite;
 }

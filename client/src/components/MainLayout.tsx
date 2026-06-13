@@ -175,11 +175,12 @@ export default function MainLayout({
       </header>
 
       {/* Page Content Container */}
-      <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+      <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10 w-full">
+        <div className="w-full max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16 py-10">
           {children}
         </div>
       </main>
     </div>
   );
 }
+
