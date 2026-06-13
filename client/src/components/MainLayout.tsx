@@ -34,7 +34,7 @@ export default function MainLayout({
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] flex flex-col font-sans selection:bg-[#c5a880]/30 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#09090b] flex flex-col font-sans selection:bg-[#c5a880]/30 relative">
       {/* Background glow blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-[#c5a880]/[0.02] blur-[150px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-[#c5a880]/[0.015] blur-[150px] pointer-events-none z-0" />
@@ -175,7 +175,7 @@ export default function MainLayout({
       </header>
 
       {/* Page Content Container */}
-      <main className="flex-1 overflow-y-auto custom-scrollbar relative z-10 w-full">
+      <main className="flex-1 relative z-10 w-full">
         <div className="w-full max-w-screen-2xl mx-auto px-6 sm:px-8 lg:px-12 xl:px-16 py-10">
           {children}
         </div>

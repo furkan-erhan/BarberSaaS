@@ -236,7 +236,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-[#c5a880]/30 font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#09090b] text-[#fafafa] selection:bg-[#c5a880]/30 font-sans relative">
       {/* ─── Splitting Splash Intro ─── */}
       {showSplash && <SplittingSplash onComplete={() => setShowSplash(false)} />}
 
