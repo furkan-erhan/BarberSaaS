@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Lenis from "lenis";
 import {
   BrowserRouter as Router,
   Routes,
@@ -299,6 +300,27 @@ function App() {
   };
 
   const handleLoginSuccess = () => setIsAuthenticated(true);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      lerp: 0.05,
+      wheelMultiplier: 1.15,
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
 
   return (
     <Router>

@@ -251,7 +251,7 @@ export default function LandingPage() {
         />
         {/* Scissors icon at the cut point */}
         <div
-          className="absolute top-1/2 -translate-y-1/2 transition-all duration-100 ease-out"
+          className="absolute top-1/2 -translate-y-1/2"
           style={{ left: `calc(${scrollProgress * 100}% - 10px)` }}
         >
           <Scissors className="w-5 h-5 text-[#c5a880] animate-glow-pulse" />
