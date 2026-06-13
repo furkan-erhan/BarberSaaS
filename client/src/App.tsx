@@ -309,6 +309,7 @@ function App() {
       gestureOrientation: "vertical",
       smoothWheel: true,
     });
+    (window as any).lenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -319,6 +320,7 @@ function App() {
 
     return () => {
       lenis.destroy();
+      (window as any).lenis = undefined;
     };
   }, []);
 

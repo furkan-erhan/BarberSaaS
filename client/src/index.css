@@ -5,6 +5,7 @@
   /* Fonts */
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
+  --font-editorial: "Cormorant Garamond", "Playfair Display", Georgia, serif;
 
   /* Color Palette — Luxury Dark */
   --color-bg-base: #09090b;
@@ -77,7 +78,11 @@ body {
   background-color: var(--color-bg-base);
   color: var(--color-text-primary);
   min-height: 100vh;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Custom interactive pointer state with a luxury gold circle and dot */
@@ -98,6 +103,10 @@ a, button, select, input, textarea, [role='button'], .cursor-pointer {
 
 .font-sans {
   font-family: var(--font-sans);
+}
+
+.font-editorial {
+  font-family: var(--font-editorial);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────── */

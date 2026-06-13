@@ -141,12 +141,34 @@ export default function AIStyleRecommendation() {
                   animate={isScanning ? { scale: [1, 1.03, 1], opacity: [0.5, 0.8, 0.5] } : { scale: 1, opacity: 0.35 }}
                   transition={isScanning ? { duration: 1.5, repeat: Infinity } : {}}
                 >
-                  <svg width="140" height="180" viewBox="0 0 140 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="70" cy="85" rx="55" ry="70" stroke="#c5a880" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
-                    <circle cx="48" cy="72" r="4" fill="#c5a880" opacity="0.3" />
-                    <circle cx="92" cy="72" r="4" fill="#c5a880" opacity="0.3" />
-                    <path d="M58 100 Q70 112 82 100" stroke="#c5a880" strokeWidth="1.5" fill="none" opacity="0.3" />
-                    <line x1="70" y1="80" x2="70" y2="95" stroke="#c5a880" strokeWidth="1" opacity="0.2" />
+                  <svg width="140" height="180" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Circle grid backdrop */}
+                    <circle cx="50" cy="60" r="45" stroke="#c5a880" strokeWidth="1.2" strokeDasharray="4 4" opacity="0.3" />
+                    
+                    {/* Human Head Silhouette */}
+                    {/* Hair outline */}
+                    <path d="M25 45 C25 25, 35 15, 50 15 C65 15, 75 25, 75 45 C78 45, 78 55, 75 58 C75 72, 70 95, 50 102 C30 95, 25 72, 25 58 C22 55, 22 45, 25 45 Z" stroke="#c5a880" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M25 45 C32 40, 42 38, 50 42 C58 38, 68 40, 75 45" stroke="#c5a880" strokeWidth="1.8" strokeLinecap="round" /> {/* Hairline */}
+                    <path d="M30 28 C42 24, 58 24, 70 28" stroke="#c5a880" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" /> {/* Top hair detail */}
+                    
+                    {/* Ears */}
+                    <path d="M23 55 C21 55, 20 58, 22 62 C23 64, 25 64, 25 61" stroke="#c5a880" strokeWidth="1.5" />
+                    <path d="M77 55 C79 55, 80 58, 78 62 C77 64, 75 64, 75 61" stroke="#c5a880" strokeWidth="1.5" />
+                    
+                    {/* Eyes (closed, eyelashes) */}
+                    <path d="M36 60 Q 40 64 44 60" stroke="#c5a880" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M56 60 Q 60 64 64 60" stroke="#c5a880" strokeWidth="1.5" strokeLinecap="round" />
+                    
+                    {/* Eyebrows */}
+                    <path d="M34 54 Q 40 52 45 55" stroke="#c5a880" strokeWidth="1.2" strokeLinecap="round" />
+                    <path d="M66 54 Q 60 52 55 55" stroke="#c5a880" strokeWidth="1.2" strokeLinecap="round" />
+                    
+                    {/* Nose */}
+                    <path d="M50 59 L50 72 Q50 75 47 75" stroke="#c5a880" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    
+                    {/* Lips */}
+                    <path d="M42 85 Q 50 89 58 85" stroke="#c5a880" strokeWidth="1.5" strokeLinecap="round" />
+                    <path d="M46 85 Q 50 83 54 85" stroke="#c5a880" strokeWidth="1.5" strokeLinecap="round" />
                   </svg>
                 </motion.div>
 
